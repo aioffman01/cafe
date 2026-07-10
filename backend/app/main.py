@@ -36,13 +36,18 @@ def create_admin_user():
         if not admin:
             admin_user = User(
                 username="admin",
-                hashed_password=get_password_hash("password123"),
+                hashed_password=get_password_hash("1234"),
                 nickname="카페관리자",
                 role="admin"
             )
             db.add(admin_user)
             db.commit()
-            print("★ Default admin user auto-created: admin / password123")
+            print("★ Default admin user auto-created: admin / 1234")
+        else:
+            admin.hashed_password = get_password_hash("1234")
+            db.add(admin)
+            db.commit()
+            print("★ Admin user password updated to: 1234")
     finally:
         db.close()
 
