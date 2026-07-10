@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAPI 명세 및 API 설계 가이드</title>
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #03C75A;
+      --primary-hover: #02b34f;
+      --primary-light: #E8F8F0;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-base: #f8fafc;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(3, 199, 90, 0.05), 0 4px 6px -2px rgba(3, 199, 90, 0.02);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 8px 0 0 0;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 10px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    .folder-tree {
+      background-color: #0f172a;
+      color: #cbd5e1;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .folder-tree .comment {
+      color: #64748b;
+    }
+
+    .folder-tree .highlight {
+      color: #38bdf8;
+    }
+
+    .folder-tree .file {
+      color: #f59e0b;
+    }
+
+    .method-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .method-get { background-color: #61afff; }
+    .method-post { background-color: #49cc90; }
+    .method-put { background-color: #fca130; }
+    .method-delete { background-color: #f93e3e; }
+
+    .api-endpoint {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .api-endpoint:last-child {
+      border-bottom: none;
+    }
+
+    .api-path {
+      font-family: monospace;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .api-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    .info-box {
+      background-color: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      font-size: 14px;
+      color: #1e3a8a;
+      margin-top: 15px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-light);
+      background-color: var(--bg-card);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📋 OpenAPI 설계 & API 명세 가이드</h1>
+    <p>"카페 모임" 프로젝트 초보자용 API 명세 가이드북</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- OpenAPI 정의 카드 -->
+    <div class="card">
+      <h2>OpenAPI란 무엇인가요?</h2>
+      <p><strong>OpenAPI</strong>는 프론트엔드와 백엔드가 서로 약속한 규격대로 데이터를 주고받을 수 있도록 작성한 <strong>API 계약 문서(Contract)</strong>입니다.</p>
+      <div class="info-box">
+        💡 이 명세를 기반으로 FastAPI는 실제 작동하는 대화형 테스트 페이지(스웨거: <code>http://localhost:8000/docs</code>)를 자동 생성해 줍니다.
+      </div>
+    </div>
+
+    <!-- 파일 구조 카드 -->
+    <div class="card">
+      <h2>OpenAPI 디렉토리 구성</h2>
+      <p>하나의 거대한 명세서 파일을 사용하는 대신, 성격(역할)별로 분할하여 조합하는 조립식 설계를 사용했습니다.</p>
+      <div class="folder-tree">
+        📁 docs/openapi<br>
+        ├── 📁 <span class="highlight">components/</span> <span class="comment"># [데이터 규격] 공통 데이터 모델 정의</span><br>
+        │   └── 📄 schemas.yaml <span class="comment"># UserResponse, PostCreate 등의 JSON 구조체 정의</span><br>
+        ├── 📁 <span class="highlight">paths/</span> <span class="comment"># [API 경로] 기능 도메인별 리소스 주소 및 HTTP 메서드 정의</span><br>
+        │   ├── 📄 auth.yaml <span class="comment"># 회원가입, 로그인, 정보수정, 멤버관리 API 명세</span><br>
+        │   ├── 📄 posts.yaml <span class="comment"># 자유게시판 글 등록, 조회, 삭제 및 댓글 API 명세</span><br>
+        │   └── 📄 events.yaml <span class="comment"># 일정 추가, 캘린더 월별 조회, 삭제 API 명세</span><br>
+        └── 📄 <span class="file">main.yaml</span> <span class="comment"># 🚀 [메인 조립 파일] 분산된 파일들을 하나로 연결하여 명세 완성</span>
+      </div>
+    </div>
+
+    <!-- 전체 API 명세 요약 카드 -->
+    <div class="card">
+      <h2>구현된 카페 API 목록 (API Endpoint Map)</h2>
+      <p>본 프로젝트에 반영된 주요 API 경로와 사용 권한 요약입니다.</p>
+      
+      <!-- 인증/회원 -->
+      <h3 style="font-size:15px; margin-top:20px; color:var(--primary)">🔐 인증 및 회원 관련</h3>
+      <div class="api-endpoint">
+        <span class="method-badge method-post">POST</span>
+        <span class="api-path">/auth/signup</span>
+        <span class="api-desc">일반 회원 가입 (아이디/닉네임 중복체크 포함)</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-post">POST</span>
+        <span class="api-path">/auth/login</span>
+        <span class="api-desc">로그인 및 JWT 토큰 발급</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-get">GET</span>
+        <span class="api-path">/auth/me</span>
+        <span class="api-desc">로그인 유저 본인 프로필 조회</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-put">PUT</span>
+        <span class="api-path">/auth/me</span>
+        <span class="api-desc">본인 프로필(닉네임, 비밀번호) 수정</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-get">GET</span>
+        <span class="api-path">/auth/users</span>
+        <span class="api-desc">전체 가입 회원 목록 조회 <strong>(관리자 전용)</strong></span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-delete">DELETE</span>
+        <span class="api-path">/auth/users/{user_id}</span>
+        <span class="api-desc">회원 강제 탈퇴 처리 <strong>(관리자 전용)</strong></span>
+      </div>
+
+      <!-- 게시판 -->
+      <h3 style="font-size:15px; margin-top:25px; color:#2980b9">📝 자유게시판 및 댓글 관련</h3>
+      <div class="api-endpoint">
+        <span class="method-badge method-get">GET</span>
+        <span class="api-path">/posts</span>
+        <span class="api-desc">게시글 전체 목록 조회</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-post">POST</span>
+        <span class="api-path">/posts</span>
+        <span class="api-desc">신규 게시글 작성 (로그인 필수)</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-get">GET</span>
+        <span class="api-path">/posts/{post_id}</span>
+        <span class="api-desc">게시글 상세 정보 및 댓글 리스트 조회</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-put">PUT</span>
+        <span class="api-path">/posts/{post_id}</span>
+        <span class="api-desc">게시글 수정 (작성자 또는 관리자)</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-delete">DELETE</span>
+        <span class="api-path">/posts/{post_id}</span>
+        <span class="api-desc">게시글 삭제 (작성자 또는 관리자)</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-post">POST</span>
+        <span class="api-path">/posts/{post_id}/comments</span>
+        <span class="api-desc">댓글 작성</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-delete">DELETE</span>
+        <span class="api-path">/posts/{post_id}/comments/{comment_id}</span>
+        <span class="api-desc">댓글 삭제</span>
+      </div>
+
+      <!-- 일정 -->
+      <h3 style="font-size:15px; margin-top:25px; color:#d35400">📅 공유 캘린더 관련</h3>
+      <div class="api-endpoint">
+        <span class="method-badge method-get">GET</span>
+        <span class="api-path">/events</span>
+        <span class="api-desc">특정 년도/월에 겹치는 일정 범위 조회</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-post">POST</span>
+        <span class="api-path">/events</span>
+        <span class="api-desc">일정 등록 (종일 일정 여부 및 기간 일정 지원)</span>
+      </div>
+      <div class="api-endpoint">
+        <span class="method-badge method-delete">DELETE</span>
+        <span class="api-path">/events/{event_id}</span>
+        <span class="api-desc">일정 삭제 (작성자 또는 관리자)</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Cafe Moim Project. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

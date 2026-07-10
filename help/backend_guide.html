@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>백엔드 구조 및 기술 가이드</title>
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #03C75A;
+      --primary-hover: #02b34f;
+      --primary-light: #E8F8F0;
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --bg-base: #f8fafc;
+      --bg-card: #ffffff;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.02);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+      --shadow-lg: 0 10px 15px -3px rgba(3, 199, 90, 0.05), 0 4px 6px -2px rgba(3, 199, 90, 0.02);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: 30px 20px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    header p {
+      margin: 8px 0 0 0;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 10px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h2::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background-color: var(--primary);
+      border-radius: 2px;
+    }
+
+    .folder-tree {
+      background-color: #0f172a;
+      color: #cbd5e1;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .folder-tree .comment {
+      color: #64748b;
+    }
+
+    .folder-tree .highlight {
+      color: #38bdf8;
+    }
+
+    .folder-tree .file {
+      color: #f472b6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    @media (min-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .tech-item {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tech-item h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tech-item p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .tech-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .flow-step {
+      display: flex;
+      margin-bottom: 15px;
+      gap: 15px;
+    }
+
+    .flow-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-number {
+      background-color: var(--primary);
+      color: #ffffff;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .step-content h4 {
+      margin: 0 0 4px 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .step-content p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border-light);
+      background-color: var(--bg-card);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>⚙️ 백엔드 구조 & 기술 가이드</h1>
+    <p>"카페 모임" 프로젝트 초보자용 백엔드 가이드북</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- 백엔드 구조 카드 -->
+    <div class="card">
+      <h2>백엔드 디렉토리 구조 및 역할</h2>
+      <p>관심사 분리(Separation of Concerns) 원칙에 따라 분산 설계된 백엔드 핵심 구조입니다.</p>
+      <div class="folder-tree">
+        📁 backend/app<br>
+        ├── 📁 <span class="highlight">api/</span> <span class="comment"># [컨트롤러] 클라이언트의 HTTP 요청 진입점 및 권한 가드</span><br>
+        │   ├── 📄 deps.py <span class="comment"># 공통 의존성 주입 (현재 로그인 유저 확인 등)</span><br>
+        │   └── 📁 v1/endpoints/ <span class="comment"># 기능별 라우터 분할 (auth, posts, events)</span><br>
+        ├── 📁 <span class="highlight">core/</span> <span class="comment"># [공통설정] 데이터베이스 연결 설정, 보안 유틸리티</span><br>
+        │   ├── 📄 config.py <span class="comment"># 환경 변수 및 JWT 비밀키 로드</span><br>
+        │   ├── 📄 database.py <span class="comment"># SQLAlchemy 연결 객체 생성</span><br>
+        │   └── 📄 security.py <span class="comment"># 패스워드 암호화 해싱 및 JWT 생성</span><br>
+        ├── 📁 <span class="highlight">crud/</span> <span class="comment"># [데이터 질의] DB 테이블 생성/조회/수정/삭제 실제 SQL 로직 수행</span><br>
+        │   ├── 📄 base.py <span class="comment"># 공통 CRUD 부모 추상 클래스</span><br>
+        │   └── 📄 crud_user.py / crud_post.py ... <span class="comment"># 도메인별 쿼리 분리</span><br>
+        ├── 📁 <span class="highlight">models/</span> <span class="comment"># [DB 테이블 매핑] 데이터베이스 실제 테이블 형태와 매핑되는 파이썬 클래스</span><br>
+        ├── 📁 <span class="highlight">schemas/</span> <span class="comment"># [입출력 검증] 외부 요청의 데이터 유효성을 검사하는 Pydantic 스키마</span><br>
+        └── 📄 <span class="file">main.py</span> <span class="comment"># 🚀 백엔드 기동 엔트리포인트 (기본 어드민 계정 자동 생성)</span>
+      </div>
+    </div>
+
+    <!-- 백엔드 삼총사 기술 카드 -->
+    <div class="card">
+      <h2>백엔드 핵심 기술 개념</h2>
+      <p>FastAPI 백엔드를 구성하는 핵심 3대 기술 컴포넌트의 역할입니다.</p>
+      
+      <div class="grid">
+        <!-- FastAPI -->
+        <div class="tech-item">
+          <h3>FastAPI <span class="tech-badge">Web Framework</span></h3>
+          <p>현대적이고 매우 빠른 파이썬 웹 프레임워크입니다. 코드 작성과 동시에 스웨거 문서(/docs)를 자동 빌드해 주는 막강한 기능을 제공합니다.</p>
+        </div>
+        
+        <!-- SQLAlchemy -->
+        <div class="tech-item">
+          <h3>SQLAlchemy <span class="tech-badge">ORM (Object-Relational Mapping)</span></h3>
+          <p>데이터베이스의 테이블을 파이썬 클래스처럼 다룰 수 있게 해주는 도구입니다. 복잡한 SQL문을 한 줄의 파이썬 객체 메서드로 실행하게 돕습니다.</p>
+        </div>
+
+        <!-- Pydantic -->
+        <div class="tech-item">
+          <h3>Pydantic <span class="tech-badge">Data Validation</span></h3>
+          <p>외부에서 전송된 JSON 데이터가 누락되었거나 형식이 맞지 않는 경우, 백엔드 진입 전 자동으로 유효성을 검증하고 422 에러를 반환해 서버를 보호합니다.</p>
+        </div>
+
+        <!-- SQLite -->
+        <div class="tech-item">
+          <h3>SQLite (app.db) <span class="tech-badge">File Database</span></h3>
+          <p>별도의 DB 서버 설치 없이 단일 파일 단위로 돌아가는 경량 파일 데이터베이스입니다. 로컬 개발 시 매우 빠르고 간편하게 사용 가능합니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 데이터 흐름 설명 카드 -->
+    <div class="card">
+      <h2>API 요청 처리 흐름 (Data Flow)</h2>
+      <p>클라이언트에서 요청이 도달했을 때 백엔드 내부에서 데이터가 흐르는 기본 경로입니다.</p>
+      
+      <div class="flow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>HTTP Request 진입 (API Layer)</h4>
+          <p>브라우저가 요청을 보냅니다. <code>api/v1/endpoints/</code>의 라우터가 Pydantic 스키마(<code>schemas/</code>)를 사용해 데이터 유효성을 검사합니다.</p>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>의존성 및 인증 가드 작동 (Security Layer)</h4>
+          <p><code>api/deps.py</code>가 동작하여 헤더에 포함된 JWT 토큰을 해석하고 유효한 사용자인지, 관리자인지 권한을 검증합니다.</p>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>비즈니스 쿼리 요청 (CRUD Layer)</h4>
+          <p>검증을 마친 요청은 <code>crud/</code>의 매핑 인스턴스로 넘겨집니다. 이곳에서 실제 필요한 데이터베이스 조회 및 조작 함수를 구동합니다.</p>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4>데이터베이스 매핑 및 반영 (ORM Layer)</h4>
+          <p>SQLAlchemy 모델(<code>models/</code>) 객체를 조작하여 SQLite(<code>app.db</code>)에 물리적인 데이터를 기록하고 영구 보관합니다.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 2026 Cafe Moim Project. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
