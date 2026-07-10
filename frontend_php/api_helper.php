@@ -31,7 +31,7 @@ function call_api($method, $path, $data = null) {
     }
     
     $response = curl_exec($ch);
-    $http_code = curl_getinfo($ch, curlINFO_HTTP_CODE);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     
     return [
