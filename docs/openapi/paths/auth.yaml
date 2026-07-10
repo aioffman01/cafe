@@ -1,0 +1,122 @@
+/auth/signup:
+  post:
+    summary: 회원가입
+    tags:
+      - Authentication
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserCreate'
+    responses:
+      '201':
+        description: 회원가입 성공
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/UserResponse'
+      '400':
+        description: 중복된 아이디 혹은 이메일 존재
+
+/auth/login:
+  post:
+    summary: 로그인 (JWT 토큰 발급)
+    tags:
+      - Authentication
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserLogin'
+    responses:
+      '200':
+        description: 로그인 성공 및 토큰 반환
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/Token'
+      '401':
+        description: 인증 실패 (비밀번호 불일치 등)
+
+/auth/me:
+  get:
+    summary: 내 정보 조회
+    tags:
+      - Authentication
+    security:
+      - BearerAuth: []
+    responses:
+      '200':
+        description: 내 프로필 정보
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/UserResponse'
+      '401':
+        description: 인증되지 않은 사용자
+  put:
+    summary: 내 정보 수정 (닉네임/비밀번호 변경)
+    tags:
+      - Authentication
+    security:
+      - BearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas.yaml#/UserUpdate'
+    responses:
+      '200':
+        description: 수정 성공 및 수정된 정보 반환
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas.yaml#/UserResponse'
+      '400':
+        description: 중복된 닉네임 사용 불가능
+      '401':
+        description: 인증 실패
+
+/auth/users:
+  get:
+    summary: 전체 회원 목록 조회 (관리자 전용)
+    tags:
+      - Authentication
+    security:
+      - BearerAuth: []
+    responses:
+      '200':
+        description: 회원 목록 반환
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '../components/schemas.yaml#/UserResponse'
+      '403':
+        description: 권한 없음 (관리자 아님)
+
+/auth/users/{user_id}:
+  delete:
+    summary: 회원 강제 탈퇴/삭제 (관리자 전용)
+    tags:
+      - Authentication
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '204':
+        description: 강퇴 처리 완료
+      '400':
+        description: 자기 자신 삭제 불가능 또는 올바르지 않은 요청
+      '403':
+        description: 권한 없음
+

@@ -1,0 +1,189 @@
+UserCreate:
+  type: object
+  required:
+    - username
+    - password
+    - nickname
+  properties:
+    username:
+      type: string
+      description: 로그인에 사용할 아이디
+    password:
+      type: string
+      description: 비밀번호
+    nickname:
+      type: string
+      description: 카페에서 사용할 닉네임
+
+UserLogin:
+  type: object
+  required:
+    - username
+    - password
+  properties:
+    username:
+      type: string
+    password:
+      type: string
+
+UserResponse:
+  type: object
+  properties:
+    id:
+      type: integer
+    username:
+      type: string
+    nickname:
+      type: string
+    role:
+      type: string
+      enum: [admin, member]
+      description: 사용자 역할 (관리자 또는 일반 회원)
+
+UserUpdate:
+  type: object
+  properties:
+    nickname:
+      type: string
+    password:
+      type: string
+
+Token:
+  type: object
+  properties:
+    access_token:
+      type: string
+    token_type:
+      type: string
+      default: bearer
+
+PostCreate:
+  type: object
+  required:
+    - title
+    - content
+  properties:
+    title:
+      type: string
+    content:
+      type: string
+
+PostUpdate:
+  type: object
+  properties:
+    title:
+      type: string
+    content:
+      type: string
+
+PostResponse:
+  type: object
+  properties:
+    id:
+      type: integer
+    title:
+      type: string
+    author_nickname:
+      type: string
+    view_count:
+      type: integer
+    created_at:
+      type: string
+      format: date-time
+
+PostDetailResponse:
+  type: object
+  properties:
+    id:
+      type: integer
+    title:
+      type: string
+    content:
+      type: string
+    author_nickname:
+      type: string
+    view_count:
+      type: integer
+    created_at:
+      type: string
+      format: date-time
+    comments:
+      type: array
+      items:
+        $ref: '#/CommentResponse'
+
+CommentCreate:
+  type: object
+  required:
+    - content
+  properties:
+    content:
+      type: string
+
+CommentResponse:
+  type: object
+  properties:
+    id:
+      type: integer
+    post_id:
+      type: integer
+    author_nickname:
+      type: string
+    content:
+      type: string
+    created_at:
+      type: string
+      format: date-time
+
+EventCreate:
+  type: object
+  required:
+    - title
+    - start_time
+    - end_time
+  properties:
+    title:
+      type: string
+    description:
+      type: string
+    start_time:
+      type: string
+      format: date-time
+    end_time:
+      type: string
+      format: date-time
+
+EventUpdate:
+  type: object
+  properties:
+    title:
+      type: string
+    description:
+      type: string
+    start_time:
+      type: string
+      format: date-time
+    end_time:
+      type: string
+      format: date-time
+
+EventResponse:
+  type: object
+  properties:
+    id:
+      type: integer
+    title:
+      type: string
+    description:
+      type: string
+    start_time:
+      type: string
+      format: date-time
+    end_time:
+      type: string
+      format: date-time
+    is_admin_event:
+      type: boolean
+      description: 관리자가 등록한 공식 일정인지 여부 (달력 하이라이팅 기준)
+    author_nickname:
+      type: string

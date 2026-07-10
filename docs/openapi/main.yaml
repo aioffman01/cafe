@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  title: Cafe Moim API Specification
+  description: 단일 카페 커뮤니티 "카페 모임" 서비스용 백엔드 API 명세서
+  version: 1.0.0
+servers:
+  - url: http://localhost:8000/api/v1
+    description: 로컬 개발 서버
+
+paths:
+  /auth/signup:
+    $ref: './paths/auth.yaml#/auth/signup'
+  /auth/login:
+    $ref: './paths/auth.yaml#/auth/login'
+  /auth/me:
+    $ref: './paths/auth.yaml#/auth/me'
+  /auth/users:
+    $ref: './paths/auth.yaml#/auth/users'
+  /auth/users/{user_id}:
+    $ref: './paths/auth.yaml#/auth/users/~1{user_id}'
+  
+  /posts:
+    $ref: './paths/posts.yaml#/posts'
+  /posts/{post_id}:
+    $ref: './paths/posts.yaml#/posts/~1{post_id}'
+  /posts/{post_id}/comments:
+    $ref: './paths/posts.yaml#/posts/~1{post_id}~1comments'
+  /posts/{post_id}/comments/{comment_id}:
+    $ref: './paths/posts.yaml#/posts/~1{post_id}~1comments/~1{comment_id}'
+  
+  /events:
+    $ref: './paths/events.yaml#/events'
+  /events/{event_id}:
+    $ref: './paths/events.yaml#/events/~1{event_id}'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
